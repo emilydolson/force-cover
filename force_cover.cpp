@@ -40,7 +40,7 @@ public:
   virtual void run(const MatchFinder::MatchResult &Result) {
     const CXXMethodDecl *MethodNode = Result.Nodes.getNodeAs<CXXMethodDecl>("method");
     
-    if (MethodNode->getLocation().isValid() && !MethodNode->getTemplatedKind()) {
+    if (MethodNode->isFirstDecl() && MethodNode->getLocation().isValid() && !MethodNode->getTemplatedKind()) {
       Rewrite.InsertText(MethodNode->getLocStart(), "virtual ", true, true);
     }
   }
