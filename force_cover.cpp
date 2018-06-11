@@ -56,7 +56,22 @@ public:
   virtual void run(const MatchFinder::MatchResult &Result) {
     const ClassTemplateDecl *ClassNode = Result.Nodes.getNodeAs<ClassTemplateDecl>("class");
 
-    Rewrite.InsertText(ClassNode->getLocEnd().getLocWithOffset(2), "template class " + ClassNode->getNameAsString() + "<int>;", true, true);
+    const TemplateParameterList * temp_params = ClassNode->getTemplateParameters();
+
+    std::string temp_param_string = "";
+    if (temp_params && temp_params->getMinRequiredArguments() > 0) {
+      
+      temp_param_string += "int";
+
+      for (size_t i = 0; i < temp_params->getMinRequiredArguments()-1; i++) {
+	temp_param_string += ",int";
+      }
+
+    }
+
+
+    
+    Rewrite.InsertText(ClassNode->getLocEnd().getLocWithOffset(2), "template class " + ClassNode->getNameAsString() + "<" + temp_param_string + ">;", true, true);
 
   }
 
