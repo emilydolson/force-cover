@@ -51,32 +51,50 @@ private:
 
 class TemplateClassHandler : public MatchFinder::MatchCallback {
 public:
-  TemplateClassHandler(Rewriter &Rewrite) : Rewrite(Rewrite) {}
+  TemplateClassHandler(Rewriter &Rewrite) : Rewrite(Rewrite) {
+    declfile.open("template_instantiations.h");
+  }
 
   virtual void run(const MatchFinder::MatchResult &Result) {
     const ClassTemplateDecl *ClassNode = Result.Nodes.getNodeAs<ClassTemplateDecl>("class");
 
+    if (ClassNode->isImplicit() || !ClassNode->getLocation().isValid()) {
+      return;
+    }
+    
     const TemplateParameterList * temp_params = ClassNode->getTemplateParameters();
-
+    
     std::string temp_param_string = "";
     if (temp_params && temp_params->getMinRequiredArguments() > 0) {
-      
-      temp_param_string += "int";
 
-      for (size_t i = 0; i < temp_params->getMinRequiredArguments()-1; i++) {
-	temp_param_string += ",int";
+      //std::cout << temp_params->getParam(0)->getDeclKindName() << " " << temp_params->getParam(0)->getNameAsString() << std::endl;
+      if (!strcmp(temp_params->getParam(0)->getDeclKindName(), "TemplateTypeParm")) {
+	temp_param_string += "int";
+      } else {
+	temp_param_string += "1";
+      }
+
+      for (size_t i = 1; i < temp_params->getMinRequiredArguments(); i++) {
+	//std::cout << i << temp_param_string<< " "<< temp_params->getParam(i)->getDeclKindName() << " " << temp_params->getParam(i)->getNameAsString() << std::endl;
+	if (!strcmp(temp_params->getParam(i)->getDeclKindName(), "TemplateTypeParm")) {
+	  temp_param_string += ",int";
+	} else {
+	  temp_param_string += ",1";
+	}
+
       }
 
     }
 
 
     
-    Rewrite.InsertText(ClassNode->getLocEnd().getLocWithOffset(2), "template class " + ClassNode->getNameAsString() + "<" + temp_param_string + ">;", true, true);
+    declfile << "template class " + ClassNode->getNameAsString() + "<" + temp_param_string + ">;" << std::endl;
 
   }
 
 private:
   Rewriter &Rewrite;
+  std::ofstream declfile;
 };
 
 class InlineFunctionHandler : public MatchFinder::MatchCallback {
