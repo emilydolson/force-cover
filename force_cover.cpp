@@ -21,6 +21,10 @@
 #include "llvm/Support/raw_ostream.h"
 #include "clang/AST/Decl.h"
 
+#include "tools/string_utils.h"
+#include "base/array.h"
+#include "base/vector.h"
+
 #include <iostream>
 #include <set>
 #include <fstream>
@@ -31,6 +35,169 @@ using namespace clang::driver;
 using namespace clang::tooling;
 
 static llvm::cl::OptionCategory MatcherSampleCategory("Matcher Sample");
+
+
+std::string BuildTemplateParamString(const TemplateParameterList * temp_params) {
+  std::string temp_param_string = "";
+  if (temp_params && temp_params->getMinRequiredArguments() > 0) {
+    
+    //std::cout << temp_params->getParam(0)->getDeclKindName() << " " << temp_params->getParam(0)->getNameAsString() << std::endl;
+    if (!strcmp(temp_params->getParam(0)->getDeclKindName(), "TemplateTypeParm")) {
+      temp_param_string += "int";
+    } else {
+      temp_param_string += "1";
+    }
+
+    for (size_t i = 1; i < temp_params->getMinRequiredArguments(); i++) {
+      //std::cout << i << temp_param_string<< " "<< temp_params->getParam(i)->getDeclKindName() << " " << temp_params->getParam(i)->getNameAsString() << std::endl;
+      if (!strcmp(temp_params->getParam(i)->getDeclKindName(), "TemplateTypeParm")) {
+	temp_param_string += ",int";
+      } else {
+	temp_param_string += ",1";
+      }  
+    }
+  }
+  return temp_param_string;
+}
+
+std::map<std::string, std::string> BuildTemplateParamMap(const TemplateParameterList * temp_params) {
+
+  std::map<std::string, std::string> param_map;
+
+  if (temp_params) {
+
+    for (const NamedDecl * p : *temp_params) {
+      // std::cout << " "<< p->getDeclKindName() << " " << p->getNameAsString() << std::endl;
+      if (!strcmp(p->getDeclKindName(), "TemplateTypeParm")) {
+	      param_map[p->getNameAsString()] = "int";
+      } else {
+      	param_map[p->getNameAsString()] = "1";
+      }  
+    }
+
+    //if (temp_params->containsUnexpandedParameterPack()) {
+    //  std::prev(temp_params.end())
+    //}
+  }
+  return param_map;
+}
+
+std::string TranslateTemplateArg(std::map<std::string, std::string> & map, const TemplateParameterList * temp_list) {
+
+  std::cout << "Entering translate" << std::endl;
+  std::string temp_string = "";
+  for (const NamedDecl * p : *temp_list) {
+    if (map.find(p->getNameAsString()) != map.end()) {
+      temp_string += map[p->getNameAsString()];
+    } else if(p->getDescribedTemplate()) {
+      temp_string += "<" + TranslateTemplateArg(map, p->getDescribedTemplate()->getTemplateParameters()) + ">";
+    } else {
+      temp_string  += p->getNameAsString();
+    }
+  }
+
+   std::cout << "Exiting translate" << std::endl;
+  return temp_string;
+}
+
+std::string TranslateIndividualArg(std::string in_str, std::map<std::string, std::string> & param_map) {
+    emp::remove_whitespace(in_str);
+    if (param_map.find(in_str) != param_map.end()) {
+      return param_map[in_str];
+    } else if (in_str.find(",") != std::string::npos) {
+      emp::vector<std::string> sliced_vec = emp::slice(in_str, ',');
+      std::string result = TranslateIndividualArg(sliced_vec[0], param_map);
+      for (size_t i = 1; i < sliced_vec.size(); i++) {
+        result += "," + TranslateIndividualArg(sliced_vec[1], param_map);
+      }
+      return result;
+    } else {
+      return in_str;
+    }
+
+}
+
+std::string ParseTemplateArgs(std::string in_str, std::map<std::string, std::string> & param_map) {
+
+  std::cout << "Parsing: " << in_str << std::endl;
+  emp::vector<emp::array<size_t, 2> > ranges;
+  emp::vector<size_t> starts;
+  size_t last_end = 0;
+  for (size_t i = 0; i < in_str.size(); i++) {
+    std::cout << "Starts: " << emp::to_string(starts) << std::endl;
+    if (in_str[i] == '<') {
+      starts.push_back(i);
+      if (starts.size() == 1 && i > 0) {
+        ranges.emplace_back(emp::array<size_t, 2>({last_end, i-1}));
+      }
+    } else if (in_str[i] == '>') {
+      emp_assert(starts.size() > 0);
+      size_t s = starts.back();
+      starts.pop_back();
+      if (starts.size() == 0) {
+        ranges.emplace_back(emp::array<size_t, 2>({s, i}));
+        last_end = i+1;
+      }
+    }
+  }
+  if (last_end != in_str.size()) {
+    ranges.emplace_back(emp::array<size_t, 2>({last_end, in_str.size()-1}));
+  }
+  std::cout << "ranges: "<< emp::to_string(ranges)<< std::endl;
+  emp_assert(starts.size() == 0);
+
+  if (ranges.size() == 1 && in_str[0] != '<') {
+    return TranslateIndividualArg(in_str, param_map);
+  } else if (ranges.size() == 1) {
+    std::cout << "removing braces" << std::endl;
+    std::cout << in_str.substr(1, in_str.size()-2) << std::endl;
+    in_str = in_str.substr(1, in_str.size()-2);
+    return "<" + TranslateIndividualArg(in_str, param_map) + ">";
+  }
+
+  std::string result = "";
+  for (auto & range : ranges) {
+    std::cout << "About to recurse: " << emp::to_string(range) << " " << in_str.substr(range[0], range[1]-range[0]+1)  << std::endl;
+    result += ParseTemplateArgs(in_str.substr(range[0], range[1]-range[0]+1), param_map);
+  }
+
+  return result;
+}
+
+std::string BuildArgString(const FunctionDecl * fun, std::map<std::string, std::string> & param_map) {
+
+
+  std::string param_string = "";
+
+  if (fun && fun->getMinRequiredArguments() > 0) {
+    
+    //std::cout << fun->getParamDecl(0)->getDeclKindName() << " " << fun->getParamDecl(0)->getNameAsString() << std::endl;
+
+    if (param_map.find(fun->getParamDecl(0)->getType().getAsString()) != param_map.end()) {
+      // std::cout << "in map" << std::endl;
+      param_string += param_map[fun->getParamDecl(0)->getType().getAsString()];
+    } else {
+      std::cout << "decomposing" << std::endl;
+      param_string += ParseTemplateArgs(fun->getParamDecl(0)->getType().getAsString(), param_map);
+    } 
+    
+    for (size_t i = 1; i < fun->getMinRequiredArguments(); i++) {
+      
+      std::cout << "Incremental param string: " << param_string  << std::endl;
+      //std::cout << i << " " << fun->getParamDecl(i)->getDeclKindName() << " " << fun->getParamDecl(i)->getNameAsString() << std::endl;
+      if (param_map.find(fun->getParamDecl(i)->getType().getAsString()) != param_map.end()) {
+	      std::cout << "in map" << std::endl;
+	      param_string += "," + param_map[fun->getParamDecl(i)->getType().getAsString()];
+      } else {
+        std::cout << "decomposing" << std::endl;
+        param_string += ", " + ParseTemplateArgs(fun->getParamDecl(i)->getType().getAsString(), param_map);
+      } 
+    }
+
+  }
+  std::cout << "Final param string " << param_string << std::endl; 
+  return param_string;
+}
 
 
 class MethodHandler : public MatchFinder::MatchCallback {
@@ -51,45 +218,25 @@ private:
 
 class TemplateClassHandler : public MatchFinder::MatchCallback {
 public:
-  TemplateClassHandler(Rewriter &Rewrite) : Rewrite(Rewrite) {
-    declfile.open("template_instantiations.h");
-  }
+  TemplateClassHandler(Rewriter &Rewrite) : Rewrite(Rewrite) {}
 
   virtual void run(const MatchFinder::MatchResult &Result) {
     const ClassTemplateDecl *ClassNode = Result.Nodes.getNodeAs<ClassTemplateDecl>("class");
-
+    
     if (ClassNode->isImplicit() || !ClassNode->getLocation().isValid()) {
       return;
     }
-    
-    const TemplateParameterList * temp_params = ClassNode->getTemplateParameters();
-    
-    std::string temp_param_string = "";
-    if (temp_params && temp_params->getMinRequiredArguments() > 0) {
 
-      //std::cout << temp_params->getParam(0)->getDeclKindName() << " " << temp_params->getParam(0)->getNameAsString() << std::endl;
-      if (!strcmp(temp_params->getParam(0)->getDeclKindName(), "TemplateTypeParm")) {
-	temp_param_string += "int";
-      } else {
-	temp_param_string += "1";
-      }
-
-      for (size_t i = 1; i < temp_params->getMinRequiredArguments(); i++) {
-	//std::cout << i << temp_param_string<< " "<< temp_params->getParam(i)->getDeclKindName() << " " << temp_params->getParam(i)->getNameAsString() << std::endl;
-	if (!strcmp(temp_params->getParam(i)->getDeclKindName(), "TemplateTypeParm")) {
-	  temp_param_string += ",int";
-	} else {
-	  temp_param_string += ",1";
-	}
-
-      }
-
+    std::string filename = Rewrite.getSourceMgr().getFilename(ClassNode->getSourceRange().getBegin()).str()+"template_instantiations.h";
+    declfile.open(filename, std::ios::app);
+    if (!declfile.tellp()) {
+      declfile << "#include " << filename << ";" << std::endl;
     }
 
-
+    std::string temp_param_string = BuildTemplateParamString(ClassNode->getTemplateParameters());
     
-    declfile << "template class " + ClassNode->getNameAsString() + "<" + temp_param_string + ">;" << std::endl;
-
+    declfile << "template class " + ClassNode->getQualifiedNameAsString() + "<" + temp_param_string + ">;" << std::endl;
+    declfile.close();
   }
 
 private:
@@ -120,65 +267,43 @@ private:
 
 class TemplateFunctionHandler : public MatchFinder::MatchCallback {
 public:
-  TemplateFunctionHandler(Rewriter &Rewrite) : Rewrite(Rewrite) {
-    declfile.open("template_instantiations.h");
-  }
+  TemplateFunctionHandler(Rewriter &Rewrite) : Rewrite(Rewrite) {}
 
   virtual void run(const MatchFinder::MatchResult &Result) {
     const FunctionTemplateDecl *FunctionNode = Result.Nodes.getNodeAs<FunctionTemplateDecl>("fun");
     const FunctionDecl * fun = FunctionNode->getAsFunction();
+
+    if (!fun || FunctionNode->isImplicit() || !FunctionNode->getLocation().isValid()) {
+      return;
+    }
+    
     const TemplateParameterList * temp_params = FunctionNode->getTemplateParameters();
 
+    std::string filename = Rewrite.getSourceMgr().getFilename(FunctionNode->getSourceRange().getBegin()).str();
+    declfile.open(filename + "template_instantiations.h", std::ios::app);
+    if (!declfile.tellp()) {
+      declfile << "#include " << filename << ";" << std::endl;
+    }
+    
     std::set<std::string> temp_param_strings;
-    std::string temp_param_string = "";
-    if (temp_params) {
-      for (const NamedDecl * p : *temp_params) {
-	temp_param_strings.insert(p->getNameAsString());
-      }
+    std::map<std::string, std::string> param_map = BuildTemplateParamMap(temp_params);
+    std::string param_string = BuildArgString(fun, param_map);
 
-      if (temp_param_strings.size() > 0) {
-	temp_param_string += "int";
-      }
-      for (size_t i = 0; i < temp_param_strings.size()-1; i++) {
-	temp_param_string += ",int";
-      }
+
+    std::string ret_type = fun->getReturnType().getAsString();
+    if (param_map.find(ret_type) != param_map.end()) {
+      ret_type = param_map[ret_type];
     }
 
-    std::string param_string = "";
-    if (fun) {
-      for (size_t i = 0; i < fun->getNumParams(); i++) {
-	const ParmVarDecl * params = fun->getParamDecl(i);
-	if (params) {
-	  std::string par_type = params->getType().getAsString();
-	  if (temp_param_strings.find(par_type) != temp_param_strings.end()) {
-	    par_type = "int";
-	  }
-	  param_string += par_type;
-	  //param_string += " ";
-	  //param_string += params->getNameAsString();
-	}
-	
-      }
-
-      std::string ret_type = fun->getReturnType().getAsString();
-      if (temp_param_strings.find(ret_type) != temp_param_strings.end()) {
-	ret_type = "int";
-      }
-
-      std::string class_name = "";
-      if (dynamic_cast<const CXXMethodDecl*>(fun)) {
-	class_name = dynamic_cast<const CXXMethodDecl*>(fun)->getParent()->getNameAsString() + "::";
-      }
+    std::string temp_param_string = BuildTemplateParamString(FunctionNode->getTemplateParameters());
       
-      //Rewrite.InsertText(Rewrite.getSourceMgr().getLocForEndOfFile(), "template " +
-      //	       ret_type + " " +
-      //	       FunctionNode->getNameAsString()+ "<" + temp_param_string +
-      //	       ">(" + param_string + ");\n", true, true);
+    //Rewrite.InsertText(Rewrite.getSourceMgr().getLocForEndOfFile(), "template " +
+    //	       ret_type + " " +
+    //	       FunctionNode->getNameAsString()+ "<" + temp_param_string +
+    //	       ">(" + param_string + ");\n", true, true);
 
-      declfile << "template " + ret_type + " " + class_name+ FunctionNode->getNameAsString()+ "<" + temp_param_string +
-	">(" + param_string + ");\n" << std::endl;
-
-    }
+    declfile << "template " + ret_type + " " + FunctionNode->getQualifiedNameAsString()+ "<" + temp_param_string + ">(" + param_string + ");\n" << std::endl;
+    declfile.close();
 
   }
 
@@ -200,7 +325,7 @@ public:
     //  for (int i = 0; i < N; ++i)
 
 
-    Matcher.addMatcher(cxxMethodDecl(unless(anyOf(cxxConstructorDecl(), isImplicit(), isVirtual()))).bind("method"), &HandlerForMethod);
+    Matcher.addMatcher(cxxMethodDecl(unless(anyOf(cxxConstructorDecl(), isImplicit(), isVirtual(), isConstexpr()))).bind("method"), &HandlerForMethod);
     Matcher.addMatcher(classTemplateDecl().bind("class"), &HandlerForTemplateClass);
     Matcher.addMatcher(functionTemplateDecl().bind("fun"), &HandlerForTemplateFunction);
     Matcher.addMatcher(functionDecl(isInline()).bind("fun"), &HandlerForInlineFunction);
