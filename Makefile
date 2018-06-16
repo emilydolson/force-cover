@@ -47,7 +47,7 @@
 # reflects a release build with CMake and Ninja. binary build of LLVM, point it
 # to the bin/ directory.
 
-CXX := /usr/bin/clang++
+CXX := clang++
 LLVM_SRC_PATH := /usr/lib/llvm
 LLVM_BUILD_PATH := $(LLVM_SRC_PATH)/build
 LLVM_BIN_PATH := $(LLVM_SRC_PATH)/bin
@@ -61,7 +61,7 @@ $(info -----------------------------------------------)
 CXXFLAGS :=  -O0 -g -std=c++14
 PLUGIN_CXXFLAGS := -fpic
 
-LLVM_CXXFLAGS := `lvm-config --cxxflags`
+LLVM_CXXFLAGS := `llvm-config --cxxflags`
 LLVM_LDFLAGS := `llvm-config --ldflags --libs --system-libs`
 
 # These are required when compiling vs. a source distribution of Clang. For
