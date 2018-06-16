@@ -61,14 +61,14 @@ $(info -----------------------------------------------)
 CXXFLAGS :=  -O0 -g -std=c++14
 PLUGIN_CXXFLAGS := -fpic
 
-LLVM_CXXFLAGS := `$(LLVM_BIN_PATH)/llvm-config --cxxflags`
-LLVM_LDFLAGS := `$(LLVM_BIN_PATH)/llvm-config --ldflags --libs --system-libs`
+LLVM_CXXFLAGS := `lvm-config --cxxflags`
+LLVM_LDFLAGS := `llvm-config --ldflags --libs --system-libs`
 
 # These are required when compiling vs. a source distribution of Clang. For
 # binary distributions llvm-config --cxxflags gives the right path.
-CLANG_INCLUDES := \
-	-I$(LLVM_SRC_PATH)/tools/clang/include \
-	-I$(LLVM_BUILD_PATH)/tools/clang/include
+#CLANG_INCLUDES := \
+#	-I$(LLVM_SRC_PATH)/tools/clang/include \
+#	-I$(LLVM_BUILD_PATH)/tools/clang/include
 
 # List of Clang libraries to link. The proper -L will be provided by the
 # call to llvm-config
@@ -114,7 +114,7 @@ force_cover: force_cover.cpp
 .PHONY: clean format
 
 clean:
-	rm -rf $(BUILDDIR)/* *.dot test/*.pyc test/__pycache__
+	rm *.dot test/*.pyc test/__pycache__
 
 format:
 	find . -name "*.cpp" | xargs clang-format -style=file -i
