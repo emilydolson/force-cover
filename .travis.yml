@@ -10,4 +10,4 @@ addons:
       
 script: 
   - make
-  - ./force_cover examples/examples.cc --
+  - ./force_cover examples/example.cc --
