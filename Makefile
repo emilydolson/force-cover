@@ -48,15 +48,15 @@
 # to the bin/ directory.
 
 CXX := clang++
-LLVM_SRC_PATH := /usr/lib/llvm
-LLVM_BUILD_PATH := $(LLVM_SRC_PATH)/build
-LLVM_BIN_PATH := $(LLVM_SRC_PATH)/bin
+#LLVM_SRC_PATH := /usr/lib/llvm
+#LLVM_BUILD_PATH := $(LLVM_SRC_PATH)/build
+#LLVM_BIN_PATH := $(LLVM_SRC_PATH)/bin
 
-$(info -----------------------------------------------)
-$(info Using LLVM_SRC_PATH = $(LLVM_SRC_PATH))
-$(info Using LLVM_BUILD_PATH = $(LLVM_BUILD_PATH))
-$(info Using LLVM_BIN_PATH = $(LLVM_BIN_PATH))
-$(info -----------------------------------------------)
+#$(info -----------------------------------------------)
+#$(info Using LLVM_SRC_PATH = $(LLVM_SRC_PATH))
+#$(info Using LLVM_BUILD_PATH = $(LLVM_BUILD_PATH))
+#$(info Using LLVM_BIN_PATH = $(LLVM_BIN_PATH))
+#$(info -----------------------------------------------)
 
 CXXFLAGS :=  -O0 -g -std=c++14
 PLUGIN_CXXFLAGS := -fpic
