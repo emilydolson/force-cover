@@ -47,10 +47,10 @@
 # reflects a release build with CMake and Ninja. binary build of LLVM, point it
 # to the bin/ directory.
 
-CXX := /usr/bin/clang++-5.0
-LLVM_SRC_PATH := /usr/lib/llvm-5.0
-LLVM_BUILD_PATH := /usr/lib/llvm-5.0/build
-LLVM_BIN_PATH := /usr/lib/llvm-5.0/bin
+CXX := /usr/bin/clang++-6.0
+LLVM_SRC_PATH := /usr/lib/llvm-6.0
+LLVM_BUILD_PATH := /usr/lib/llvm-6.0/build
+LLVM_BIN_PATH := /usr/lib/llvm-6.0/bin
 
 $(info -----------------------------------------------)
 $(info Using LLVM_SRC_PATH = $(LLVM_SRC_PATH))
@@ -68,8 +68,7 @@ LLVM_LDFLAGS := `$(LLVM_BIN_PATH)/llvm-config --ldflags --libs --system-libs`
 # binary distributions llvm-config --cxxflags gives the right path.
 CLANG_INCLUDES := \
 	-I$(LLVM_SRC_PATH)/tools/clang/include \
-	-I$(LLVM_BUILD_PATH)/tools/clang/include \
-	-I/home/emily/repos/Empirical/source
+	-I$(LLVM_BUILD_PATH)/tools/clang/include
 
 # List of Clang libraries to link. The proper -L will be provided by the
 # call to llvm-config
