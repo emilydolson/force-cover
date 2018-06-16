@@ -12,4 +12,4 @@ env:
   CC=clang-5.0
   LLVM_SRC_PATH=/usr/lib/llvm-5.0
 
-script: make
+script: LLVM_SRC_PATH=/usr/lib/llvm-5.0 && make
