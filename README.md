@@ -8,6 +8,37 @@ Force-cover is a set of tools for dealing with this problem. It consists of two 
 * a C++ program (built with Clang Libtooling) that reads your C++ code, finds the templates, and sticks comments before and after them to indicate that they should be covered.
 * a python program that looks at the final test coverage output, finds the macros, and adjusts the file as necessary to indicate that uncovered template code should be counted as uncovered code.
 
+# Requirements:
+- Python (any version)
+- clang (version 5+)
+- libclang-dev (version 5+ - must be same version as clang)
+
+Theoretically force-cover should work on any operating system, but it's currently only been tested on Ubuntu and Linux Mint.
+
+# Installation
+
+You can install the requirements on Ubuntu-flavored Linux with:
+```
+wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main"
+sudo apt-get update
+sudo apt-get install -y clang-6.0 libclang-6.0-dev
+```
+(more information [here](https://blog.kowalczyk.info/article/k/how-to-install-latest-clang-6.0-on-ubuntu-16.04-xenial-wsl.html))
+
+You can build force-cover by cloning this repo and running Make inside it:
+```
+git clone https://github.com/emilydolson/force-cover.git
+cd force-cover
+make
+```
+
+This will create the force_cover executable. No additional work is needed to set up the Python script.
+
+### Troubleshooting
+
+If you have multiple versions of clang or llvm on your computer, the Make command may fail. You may be able to fix this by changing the default version as described at the bottom of [this page](https://blog.kowalczyk.info/article/k/how-to-install-latest-clang-6.0-on-ubuntu-16.04-xenial-wsl.html). Alternatively, you can modify the Makefile to include absolute paths to the installation location. Uncomment out the `CLANG_INCLUDES :=` line and `LLVM_SRC_PATH := ` line and set LLVM_SRC_PATH equal to the path to your llvm installation location (e.g. `/usr/lib/llvm-6.0`). You may also need to put `$(LLVM_SRCC_PATH)/bin/` before `llvm-config` in the `LLVM_CXXFLAGS` and `LLVM_LDFLAGS` lines if you are getting errors about llvm-config not being found.
+
 # Using force-cover
 
 The workflow for using force-cover is as follows:
