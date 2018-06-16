@@ -12,5 +12,5 @@ include:
           - clang-5.0
           - libclang-5.0-dev
 install:
-- if [ "$CXX" = "clang++" ]; then export CXX="clang++-5.0" CC="clang-5.0" LLVM_SRC_PATH=/usr/lib/llvm-5.0; fi   
+- export CXX="clang++-5.0" CC="clang-5.0" LLVM_SRC_PATH=/usr/lib/llvm-5.0;   
 script: make
