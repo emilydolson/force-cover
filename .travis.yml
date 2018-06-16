@@ -9,3 +9,4 @@ addons:
       - libclang-5.0-dev
       
 script: make
+        ./force_cover examples/examples.cc --
