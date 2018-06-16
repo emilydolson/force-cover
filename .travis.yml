@@ -1,3 +1,16 @@
 language: cpp
-compiler: clang
+compiler: clang++
+include:
+  # works on Precise and Trusty
+  - os: linux
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+          - llvm-toolchain-trusty-5.0
+        packages:
+          - clang-5.0
+          - libclang-5.0-dev
+install:
+- if [ "$CXX" = "clang++" ]; then export CXX="clang++-5.0" CC="clang-5.0" LLVM_SRC_PATH=/usr/lib/llvm-5.0; fi   
 script: make
