@@ -119,3 +119,7 @@ Open an issue or send me a PR! I'm not an expert on this stuff, so I'm sure ther
 In particular I would love to recieve:
 - Additional rules for `validate_line` in `fix_coverage.py`. Its goal is to detect lines that should not be marked as potentially coverable (e.g. lines containing only comments). I wrote some very basic rules, but I'm sure there are a bunch of edge cases it's missing. 
 - Improvements to the AST matching rules in `force_cover.cpp`. I'm sure there are edge cases that they're currently missing. Also in general they're a little overzealous at this point (in mostly harmless ways).
+- There is probably a smoother way to do all of this (e.g. one that doesn't require both a pre-processing step and a post-processing step). Potential options (some of which I tried and gave up on):
+    - Automatically add code that instantiates templates. Problem: you need to know what types to instantiate them with.
+    - Detect uninstantiated templates and replace them with an equivalent number of lines of non-templated code. Problem: detecting uninstantiated templates is non-trivial.
+    - Ditch the preprocessing script and let Python find templates in the coverage output. Problem: probably requires parsing C++ in Python.
