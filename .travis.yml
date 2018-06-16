@@ -10,6 +10,6 @@ addons:
 env:
   CXX=clang++-5.0
   CC=clang-5.0
-  LLVM_SRC_PATH=/usr/lib/llvm-5.0
+  LLVM_SRC_PATH=/usr/local/lib/llvm-5.0
 
-script: LLVM_SRC_PATH=/usr/lib/llvm-5.0 && make
+script: export LLVM_SRC_PATH=/usr/local/lib/llvm-5.0 && make
