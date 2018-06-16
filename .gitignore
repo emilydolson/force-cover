@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+example.cc~
+force_cover.cpp~
+Makefile~
+force_cover
