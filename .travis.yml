@@ -8,5 +8,6 @@ addons:
       - clang-5.0
       - libclang-5.0-dev
       
-script: make
-        ./force_cover examples/examples.cc --
+script: 
+  - make
+  - ./force_cover examples/examples.cc --
