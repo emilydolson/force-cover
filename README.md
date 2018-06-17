@@ -37,7 +37,7 @@ This will create the force_cover executable. No additional work is needed to set
 
 ### Troubleshooting
 
-If you have multiple versions of clang or llvm on your computer, the Make command may fail. You may be able to fix this by changing the default version as described at the bottom of [this page](https://blog.kowalczyk.info/article/k/how-to-install-latest-clang-6.0-on-ubuntu-16.04-xenial-wsl.html). Alternatively, you can modify the Makefile to include absolute paths to the installation location. Uncomment out the `CLANG_INCLUDES :=` line and `LLVM_SRC_PATH := ` line and set LLVM_SRC_PATH equal to the path to your llvm installation location (e.g. `/usr/lib/llvm-6.0`). You may also need to put `$(LLVM_SRCC_PATH)/bin/` before `llvm-config` in the `LLVM_CXXFLAGS` and `LLVM_LDFLAGS` lines if you are getting errors about llvm-config not being found.
+If you have multiple versions of clang or llvm on your computer, the Make command may fail. You may be able to fix this by changing the default version as described at the bottom of [this page](https://blog.kowalczyk.info/article/k/how-to-install-latest-clang-6.0-on-ubuntu-16.04-xenial-wsl.html). Alternatively, you can modify the Makefile to include absolute paths to the installation location. Set LLVM_SRC_PATH equal to the path to your llvm installation location (e.g. `/usr/lib/llvm-6.0`). Uncomment out the `LLVM_CONFIG := $(LLVM_BIN_PATH)/llvm-config` line and comment out the line above it.
 
 # Using force-cover
 

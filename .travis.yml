@@ -9,5 +9,10 @@ addons:
       - libclang-5.0-dev
       
 script: 
-  - make
-  - ./force_cover examples/example.cc --
+  - make force_cover_coverage
+  - ./force_cover examples/example.cc -- > testing/observed_example.cc
+  - diff testing/observed_example.cc testing/expected_outputs/example.cc
+after_success:
+  - llvm-profdata merge default.profraw -o default.profdata
+  - llvm-cov show ./force_cover -instr-profile=default.profdata > coverage.txt
+  - bash <(curl -s https://codecov.io/bash)

@@ -48,25 +48,28 @@
 # to the bin/ directory.
 
 CXX := clang++
-#LLVM_SRC_PATH := /usr/lib/llvm
-#LLVM_BUILD_PATH := $(LLVM_SRC_PATH)/build
-#LLVM_BIN_PATH := $(LLVM_SRC_PATH)/bin
+LVM_SRC_PATH := /usr/lib/llvm
+LLVM_BUILD_PATH := $(LLVM_SRC_PATH)/build
+LLVM_BIN_PATH := $(LLVM_SRC_PATH)/bin
 
-#$(info -----------------------------------------------)
-#$(info Using LLVM_SRC_PATH = $(LLVM_SRC_PATH))
-#$(info Using LLVM_BUILD_PATH = $(LLVM_BUILD_PATH))
-#$(info Using LLVM_BIN_PATH = $(LLVM_BIN_PATH))
-#$(info -----------------------------------------------)
+LLVM_CONFIG := llvm-config
+#LLVM_CONFIG := $(LLVM_BIN_PATH)/llvm-config
+
+$(info -----------------------------------------------)
+$(info Using LLVM_SRC_PATH = $(LLVM_SRC_PATH))
+$(info Using LLVM_BUILD_PATH = $(LLVM_BUILD_PATH))
+$(info Using LLVM_BIN_PATH = $(LLVM_BIN_PATH))
+$(info -----------------------------------------------)
 
 CXXFLAGS :=  -O0 -g -std=c++14
 PLUGIN_CXXFLAGS := -fpic
 
-LLVM_CXXFLAGS := `llvm-config --cxxflags`
-LLVM_LDFLAGS := `llvm-config --ldflags --libs --system-libs`
+LLVM_CXXFLAGS := `$(LLVM_CONFIG) --cxxflags`
+LLVM_LDFLAGS := `$(LLVM_CONFIG) --ldflags --libs --system-libs`
 
 # These are required when compiling vs. a source distribution of Clang. For
 # binary distributions llvm-config --cxxflags gives the right path.
-#CLANG_INCLUDES := \
+# CLANG_INCLUDES := \
 #	-I$(LLVM_SRC_PATH)/tools/clang/include \
 #	-I$(LLVM_BUILD_PATH)/tools/clang/include
 
@@ -109,6 +112,11 @@ force_cover: force_cover.cpp
 	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
 		$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
 
+
+force_cover_coverage: force_cover.cpp
+	$(CXX) $(CXXFLAGS) -fprofile-instr-generate -fcoverage-mapping -O0 \
+		$(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
+		$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
 
 
 .PHONY: clean format
