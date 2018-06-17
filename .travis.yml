@@ -31,6 +31,8 @@ script:
   - coverage run -a fix_coverage.py testing/coverage_report_with_templates.txt
   - diff testing/coverage_report_with_templates.txt testing/expected_outputs/coverage_report_with_templates.txt
   - rm testing/coverage_report_with_templates.txt testing/expected_outputs/coverage_report_with_templates.txt examples/coverage_report_with_templates.txt
+  - result=$(coverage run -a fix_coverage.py) || true
+  - if [ "$result" != "Usage: python fix_coverage.py [name_of_coverage_report_file]" ]; then exit 1; fi
 after_success:
   - codecov
   - llvm-profdata merge default.profraw -o default.profdata
