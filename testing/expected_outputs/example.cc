@@ -13,5 +13,5 @@ void C(T d) {/*_FORCE_COVER_START_*/
 }/*_FORCE_COVER_END_*/
 
 int main() {
-  A<int> a;
+  int a = 0;
 }

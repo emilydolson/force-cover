@@ -13,5 +13,5 @@ void C(T d) {
 }
 
 int main() {
-  A<int> a;
+  int a = 0;
 }

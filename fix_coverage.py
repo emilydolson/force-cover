@@ -166,6 +166,8 @@ def main():
             # ~~~~~~~~~~~~~~~~~~ Book-keeping section ~~~~~~~~~~~~~~~~~~~~~~
             # (adjusts force_cover_active count)
 
+            line = line.rstrip()  # Remove trailing whitespace
+
             if is_first_line(line):
                 # Zero out regions at beginning of new file just
                 # in case stuff got screwed up
@@ -178,9 +180,9 @@ def main():
             # Special case where region of forced coverage starts at
             # the end of this line (so we don't count the part before
             # the body as executable)
-            if line.endswith("_FORCE_COVER_START_") and \
+            if line.endswith("/*_FORCE_COVER_START_*/") and \
                     force_cover_active == line.count("_FORCE_COVER_START_"):
-                lines.append(line)
+                lines.append(line + "\n")
                 continue
 
             # ~~~~~~~~~~~~~ Multi-line comment section ~~~~~~~~~~~~~~~~~~~~~~
@@ -191,7 +193,7 @@ def main():
             if closes_multiline_comment(line):
                 multi_line_comment_active = False
             if multi_line_comment_active:
-                lines.append(line)
+                lines.append(line + "\n")
                 continue
 
             # ~~~~~~~~~~~~ Function-like macro section ~~~~~~~~~~~~~~~~~~~~~~
@@ -217,12 +219,12 @@ def main():
             # uninstantiated templates)
 
             if not force_cover_active:  # Don't need to change line because
-                lines.append(line)      # we aren't in a template definition
+                lines.append(line + "\n")      # we aren't in a template definition
                 continue
 
             # In template. Might need to do stuff. cover_line() will figure
             # it out
-            lines.append(cover_line(line))
+            lines.append(cover_line(line) + "\n")
 
             # ~~~~~~~~~~~~~~~~ Closing book-keeping section ~~~~~~~~~~~~~~~~~
             # (adjusts force_cover_active count)
