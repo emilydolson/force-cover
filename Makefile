@@ -116,7 +116,7 @@ force_cover: force_cover.cpp
 force_cover_coverage: force_cover.cpp
 	$(CXX) $(CXXFLAGS) -fprofile-instr-generate -fcoverage-mapping -O0 \
 		$(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
-		$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
+		$(CLANG_LIBS) $(LLVM_LDFLAGS) -o force_cover
 
 
 .PHONY: clean format
