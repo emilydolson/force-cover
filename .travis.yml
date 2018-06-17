@@ -17,11 +17,12 @@ script:
   - diff testing/observed_example.cc testing/expected_outputs/example.cc
   - clang++ testing/observed_example.cc -fprofile-instr-generate -fcoverage-mapping -o testing/observed_example
   - cd testing && ./observed_example
-  - llvm-profdata merge testing/default.profraw -o testing/default.profdata
-  - llvm-cov show testing/observed_example -instr-profile=testing/default.profdata > testing/example_coverage.txt
-  - coverage run fix_coverage.py testing/example_coverage.txt
-  - diff testing/example_coverage.txt testing/expected_outputs/example_coverage.txt
-  - rm testing/coverage.txt
+  - llvm-profdata merge default.profraw -o default.profdata
+  - llvm-cov show observed_example -instr-profile=default.profdata > example_coverage.txt
+  - coverage run fix_coverage.py example_coverage.txt
+  - diff example_coverage.txt expected_outputs/example_coverage.txt
+  - rm coverage.txt
+  - cd ..
 after_success:
   - codecov
   - llvm-profdata merge default.profraw -o default.profdata
