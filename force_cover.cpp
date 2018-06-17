@@ -97,7 +97,7 @@ public:
   MyASTConsumer(Rewriter &R) : HandlerForTemplateClass(R),  HandlerForTemplateFunction(R) {
 
     // Match methods of templated classes
-    Matcher.addMatcher(cxxMethodDecl(hasAncestor(classTemplateDecl())).bind("class"), &HandlerForTemplateClass);
+    Matcher.addMatcher(cxxMethodDecl(anyOf(hasAncestor(classTemplateDecl()), hasAncestor(classTemplateSpecializationDecl()))).bind("class"), &HandlerForTemplateClass);
     
     // Match templated functions
     Matcher.addMatcher(functionTemplateDecl().bind("fun"), &HandlerForTemplateFunction);
