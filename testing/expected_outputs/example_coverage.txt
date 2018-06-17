@@ -1,3 +1,4 @@
+/home/travis/build/emilydolson/force-cover/testing/observed_example.cc:
     1|       |template <typename T>
     2|       |class A {
     3|       |  T b;
