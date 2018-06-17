@@ -23,6 +23,10 @@ script:
   - coverage run fix_coverage.py testing/example_coverage.txt
   - diff testing/example_coverage.txt testing/expected_outputs/example_coverage.txt
   - rm testing/example_coverage.txt
+  - cp examples/coverage_test_tools.txt testing
+  - coverage run fix_coverage.py testing/coverage_test_tools.txt
+  - diff testing/coverage_test_tools.txt testing/expected_outputs/coverage_test_tools.txt
+  - rm testing/coverage_test_tools.txt testing/expected_outputs/coverage_test_tools.txt examples/coverage_test_tools.txt
 after_success:
   - codecov
   - llvm-profdata merge default.profraw -o default.profdata
