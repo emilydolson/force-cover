@@ -43,7 +43,15 @@ public:
       return;
     }
 
-    Rewrite.InsertText(ClassNode->getLocStart(), "/*_FORCE_COVER_START_*/", true, true);
+    std::string source_range = clang::Lexer::getSourceText(clang::CharSourceRange::getCharRange(ClassNode->getSourceRange()), Rewrite.getSourceMgr(), Rewrite.getLangOpts()).str();
+    std::size_t loc = source_range.find_first_of("{");
+    if (loc == std::string::npos) {
+      loc = 0;
+    } else {
+      loc++;
+    }
+
+    Rewrite.InsertText(ClassNode->getLocStart().getLocWithOffset(loc), "/*_FORCE_COVER_START_*/", true, true);
     Rewrite.InsertText(ClassNode->getLocEnd().getLocWithOffset(1), "/*_FORCE_COVER_END_*/", true, true);
   }
 
@@ -64,7 +72,15 @@ public:
       return;
     }
 
-    Rewrite.InsertText(FunctionNode->getLocStart(), "/*_FORCE_COVER_START_*/", true, true);
+    std::string source_range = clang::Lexer::getSourceText(clang::CharSourceRange::getCharRange(FunctionNode->getSourceRange()), Rewrite.getSourceMgr(), Rewrite.getLangOpts()).str();
+    std::size_t loc = source_range.find_first_of("{");
+    if (loc == std::string::npos) {
+      loc = 0;
+    } else {
+      loc++;
+    }
+
+    Rewrite.InsertText(FunctionNode->getLocStart().getLocWithOffset(loc), "/*_FORCE_COVER_START_*/", true, true);
     Rewrite.InsertText(FunctionNode->getLocEnd().getLocWithOffset(1), "/*_FORCE_COVER_END_*/", true, true);
 
   }

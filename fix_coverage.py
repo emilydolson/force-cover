@@ -79,6 +79,13 @@ def main():
 
             force_cover_active += line.count("_FORCE_COVER_START_")
 
+            # Special case where region of forced coverage starts at 
+            # the end of this line
+            if line.endswith("_FORCE_COVER_START_") and \
+                    force_cover_active == line.count("_FORCE_COVER_START_"):
+                lines.append(line)
+                continue
+
             if not force_cover_active:  # Don't need to change line because
                 lines.append(line)      # we aren't in a template definition
                 continue
