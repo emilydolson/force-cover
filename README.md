@@ -39,6 +39,30 @@ This will create the force_cover executable. No additional work is needed to set
 
 If you have multiple versions of clang or llvm on your computer, the Make command may fail. You may be able to fix this by changing the default version as described at the bottom of [this page](https://blog.kowalczyk.info/article/k/how-to-install-latest-clang-6.0-on-ubuntu-16.04-xenial-wsl.html). Alternatively, you can modify the Makefile to include absolute paths to the installation location. Set LLVM_SRC_PATH equal to the path to your llvm installation location (e.g. `/usr/lib/llvm-6.0`). Uncomment out the `LLVM_CONFIG := $(LLVM_BIN_PATH)/llvm-config` line and comment out the line above it.
 
+# Quick-start
+
+Here is the basic sequence of commands you need to execute to use force-cover with LLVM Source-Based coverage (the recommended approach):
+
+```
+./force_cover [C++ code file to be evaluated] -- [any flags you would pass to the compiler when compiling this program] > [name of file to store modified code in]
+clang++ -fprofile-instr-generate -fcoverage-mapping -O0 -fno-inline -fno-elide-constructors [.cpp file] -o [executable name]
+[run executable]
+llvm-profdata merge default.profraw -o default.profdata
+llvm-cov show [executable name] -instr-profile=default.proddata > coverage.txt
+python fix_coverage.py coverage.txt
+```
+
+Example (using incdluded example.cc file):
+
+```
+./force_cover examples/example.cc -- --language c++ -std=c++11 > examples/example_with_template_coverage_info.cc
+clang++ -fprofile-instr-generate -fcoverage-mapping -O0 -fno-inline -fno-elide-constructors examples/example_with_template_coverage_info.cc -o example
+./example
+llvm-profdata merge default.profraw -o default.profdata
+llvm-cov show ./example -instr-profile=default.proddata > coverage.txt
+python fix_coverage.py coverage.txt
+```
+
 # Using force-cover
 
 The workflow for using force-cover is as follows:
@@ -153,4 +177,4 @@ In particular I would love to recieve:
 - There is probably a smoother way to do all of this (e.g. one that doesn't require both a pre-processing step and a post-processing step). Potential options (some of which I tried and gave up on):
     - Automatically add code that instantiates templates. Problem: you need to know what types to instantiate them with.
     - Detect uninstantiated templates and replace them with an equivalent number of lines of non-templated code. Problem: detecting uninstantiated templates is non-trivial.
-    - Ditch the preprocessing script and let Python find templates in the coverage output. Problem: probably requires parsing C++ in Python.
+    - Ditch the preprocessing script and let Python find templates in the coverage output. Problem: probably requires parsing C++ in Python (although there are Python bindings for clang libtools... they're just really poorly documented).
