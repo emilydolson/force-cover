@@ -20,6 +20,8 @@ compiled in order for this to work.
 import sys
 import re
 
+def foo():
+    pass
 
 def de_comment_line(line):
     """
