@@ -2,8 +2,7 @@ language: cpp
 compiler: clang++
 python: 
   - '3.5'
-include:
-  if: (type=pull_request AND fork) OR (type=push AND NOT fork)
+if: (type=pull_request AND fork) OR (type=push AND NOT fork)
 install:
   - pip install --user codecov
 addons:
