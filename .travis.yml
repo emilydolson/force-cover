@@ -1,5 +1,8 @@
 language: cpp
 compiler: clang++
+branches:
+  except:
+    - /^pr\..*/
 python: 
   - '3.5'
 install:
