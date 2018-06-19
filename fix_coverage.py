@@ -21,7 +21,7 @@ import sys
 import re
 
 def foo():
-    pass
+    pass 
 
 def de_comment_line(line):
     """
