@@ -2,7 +2,8 @@ language: cpp
 compiler: clang++
 python: 
   - '3.5'
-if: type IN (push, pull_request)
+include:
+  if: type IN (push, pull_request)
 install:
   - pip install --user codecov
 addons:
