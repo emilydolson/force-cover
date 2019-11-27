@@ -39,6 +39,11 @@ This will create the force_cover executable. No additional work is needed to set
 
 If you have multiple versions of clang or llvm on your computer, the Make command may fail. You may be able to fix this by changing the default version as described at the bottom of [this page](https://blog.kowalczyk.info/article/k/how-to-install-latest-clang-6.0-on-ubuntu-16.04-xenial-wsl.html). Alternatively, you can modify the Makefile to include absolute paths to the installation location. Set LLVM_SRC_PATH equal to the path to your llvm installation location (e.g. `/usr/lib/llvm-6.0`). Uncomment out the `LLVM_CONFIG := $(LLVM_BIN_PATH)/llvm-config` line and comment out the line above it.
 
+Alternately, save yourself a trip through install hell by using a containerized environment a la [Singularity](https://sylabs.io/singularity/)!
+Build from our handy-dandy Singularity recipe (`sudo singularity build force-cover.simg Singularity`) or grab a pre-built container from SingularityHub (`singularity pull --name "force-cover.simg" shub://emilydolson/force-cover`).
+Then, hop on to an interactive shell by `singularity shell force-cover.simg`.
+Cowabunga!
+
 # Quick-start guide
 
 Here is the basic sequence of commands you need to execute to use force-cover with LLVM Source-Based coverage (the recommended approach):
