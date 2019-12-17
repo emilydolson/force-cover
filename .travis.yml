@@ -7,10 +7,10 @@ install:
 addons:
   apt:
     sources:
-      - llvm-toolchain-trusty-5.0
+      - llvm-toolchain-xenial-7
     packages:
-      - clang-5.0
-      - libclang-5.0-dev
+      - clang-7
+      - libclang-7-dev
 script: 
   - make force_cover_coverage
   - ./force_cover examples/example.cc -- > testing/observed_example.cc
