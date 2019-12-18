@@ -2,6 +2,12 @@ language: cpp
 compiler: clang++
 python: 
   - '3.5'
+before_install:
+  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+  - sudo apt-get update -qq
+  - sudo apt-get install g++-8 libstdc++-8-dev
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
+  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 90
 install:
   - pip install --user codecov
 addons:
@@ -13,11 +19,11 @@ addons:
       - libclang-7-dev
 script: 
   - make force_cover_coverage
-  - ./force_cover examples/example.cc -- -stdlib=libc++ > testing/observed_example.cc
+  - ./force_cover examples/example.cc -- > testing/observed_example.cc
   - diff testing/observed_example.cc testing/expected_outputs/example.cc
-  - ./force_cover examples/header_file_with_templates.hpp -- -language c++ -stdlib=libc++ -std=c++14 > testing/header_file_with_templates.hpp || true
+  - ./force_cover examples/header_file_with_templates.hpp -- -language c++ -std=c++14 > testing/header_file_with_templates.hpp || true
   - diff testing/header_file_with_templates.hpp testing/expected_outputs/header_file_with_templates.hpp
-  - clang++ testing/observed_example.cc -fprofile-instr-generate -fcoverage-mapping -stdlib=libc++ -o testing/observed_example
+  - clang++ testing/observed_example.cc -fprofile-instr-generate -fcoverage-mapping -o testing/observed_example
   - cd testing && ./observed_example
   - llvm-profdata merge default.profraw -o default.profdata
   - llvm-cov show observed_example -instr-profile=default.profdata > example_coverage.txt
