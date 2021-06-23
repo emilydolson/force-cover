@@ -1,0 +1,26 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install C++ Dependencies
+      run: apt install -y clang llvm-dev
+    - name: Install Python Dependencies
+      run: pip install --user codecov
+    - uses: actions/checkout@v2
+    - name: make
+      run: make force_cover_coverage
+    - name: Run tests
+      run: ./testing/tests.sh
+    - name: Generate coverage
+      run: llvm-profdata merge default.profraw -o default.profdata && llvm-cov show ./force_cover -instr-profile=default.profdata > coverage.txt
+    - uses: codecov/codecov-action@v1
