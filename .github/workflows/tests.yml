@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - name: Install C++ Dependencies
-      run: apt install -y clang llvm-dev
+      run: sudo apt install -y clang llvm-dev
     - name: Install Python Dependencies
       run: pip install --user codecov
     - uses: actions/checkout@v2
