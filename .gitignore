@@ -41,3 +41,7 @@ coverage*.txt
 *.profdata
 *.profraw
 examples/example_with_template_coverage_info.cc
+testing/example_coverage.txt
+testing/header_file_with_templates.hpp
+testing/observed_example
+testing/observed_example.cc

@@ -53,7 +53,7 @@ Here is the basic sequence of commands you need to execute to use force-cover wi
 clang++ -fprofile-instr-generate -fcoverage-mapping -O0 -fno-inline -fno-elide-constructors [.cpp file] -o [executable name]
 [run executable]
 llvm-profdata merge default.profraw -o default.profdata
-llvm-cov show [executable name] -instr-profile=default.proddata > coverage.txt
+llvm-cov show [executable name] -instr-profile=default.profdata > coverage.txt
 python fix_coverage.py coverage.txt
 ```
 
@@ -145,7 +145,7 @@ Now that you've run your program, coverage data exists but it's probably not in 
 
 ```bash
 llvm-profdata merge default.profraw -o default.profdata
-llvm-cov show ./example -instr-profile=default.proddata > coverage.txt
+llvm-cov show ./example -instr-profile=default.profdata > coverage.txt
 ```
 
 This processes the raw coverage data and then compares that information to the executable to generate a report indicating the number of time each line was executed. Specifically, the format should look like this:
