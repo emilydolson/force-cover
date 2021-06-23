@@ -11,8 +11,8 @@ Force-cover is a set of tools for dealing with this problem. It consists of two 
 
 # Requirements:
 - Python (any version)
-- clang (version 5+)
-- libclang-dev (version 5+ - must be same version as clang)
+- clang (version 7+) (for version 6, use [this release of force-cover](https://github.com/emilydolson/force-cover/releases/tag/v1.5))
+- libclang-dev (version 7+ - must be same version as clang)
 
 Theoretically force-cover should work on any operating system, but it's currently only been tested on Ubuntu and Linux Mint.
 
@@ -20,12 +20,8 @@ Theoretically force-cover should work on any operating system, but it's currentl
 
 You can install the requirements on Ubuntu-flavored Linux with:
 ```
-wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main"
-sudo apt-get update
-sudo apt-get install -y clang-6.0 libclang-6.0-dev
+sudo apt install -y clang llvm-dev
 ```
-(more information [here](https://blog.kowalczyk.info/article/k/how-to-install-latest-clang-6.0-on-ubuntu-16.04-xenial-wsl.html))
 
 You can build force-cover by cloning this repo and running Make inside it:
 ```
@@ -38,7 +34,7 @@ This will create the force_cover executable. No additional work is needed to set
 
 ### Troubleshooting
 
-If you have multiple versions of clang or llvm on your computer, the Make command may fail. You may be able to fix this by changing the default version as described at the bottom of [this page](https://blog.kowalczyk.info/article/k/how-to-install-latest-clang-6.0-on-ubuntu-16.04-xenial-wsl.html). Alternatively, you can modify the Makefile to include absolute paths to the installation location. Set LLVM_SRC_PATH equal to the path to your llvm installation location (e.g. `/usr/lib/llvm-6.0`). Uncomment out the `LLVM_CONFIG := $(LLVM_BIN_PATH)/llvm-config` line and comment out the line above it.
+If you have multiple versions of clang or llvm on your computer, the Make command may fail. You may be able to fix this by changing the default version as described at the bottom of [this page](https://blog.kowalczyk.info/article/k/how-to-install-latest-clang-6.0-on-ubuntu-16.04-xenial-wsl.html). Alternatively, you can modify the Makefile to include absolute paths to the installation location. Set LLVM_SRC_PATH equal to the path to your llvm installation location (e.g. `/usr/lib/llvm-11`). Uncomment the `LLVM_CONFIG := $(LLVM_BIN_PATH)/llvm-config` line and comment out the line above it.
 
 Alternately, save yourself a trip through install hell by using a containerized environment a la [Singularity](https://sylabs.io/singularity/)!
 Build from our handy-dandy Singularity recipe (`sudo singularity build force-cover.simg Singularity`) or grab a pre-built container from SingularityHub (`singularity pull --name "force-cover.simg" shub://emilydolson/force-cover`).
@@ -65,7 +61,7 @@ Example (using included example.cc file):
 clang++ -fprofile-instr-generate -fcoverage-mapping -O0 -fno-inline -fno-elide-constructors examples/example_with_template_coverage_info.cc -o example
 ./example
 llvm-profdata merge default.profraw -o default.profdata
-llvm-cov show ./example -instr-profile=default.proddata > coverage.txt
+llvm-cov show ./example -instr-profile=default.profdata > coverage.txt
 python fix_coverage.py coverage.txt
 ```
 

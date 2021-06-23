@@ -122,7 +122,7 @@ force_cover_coverage: force_cover.cpp
 .PHONY: clean format
 
 clean:
-	rm *.dot test/*.pyc test/__pycache__
+	rm force_cover
 
 format:
 	find . -name "*.cpp" | xargs clang-format -style=file -i

@@ -51,8 +51,8 @@ public:
       loc++;
     }
 
-    Rewrite.InsertText(ClassNode->getLocStart().getLocWithOffset(loc), "/*_FORCE_COVER_START_*/", true, true);
-    Rewrite.InsertText(ClassNode->getLocEnd().getLocWithOffset(1), "/*_FORCE_COVER_END_*/", true, true);
+    Rewrite.InsertText(ClassNode->getBeginLoc().getLocWithOffset(loc), "/*_FORCE_COVER_START_*/", true, true);
+    Rewrite.InsertText(ClassNode->getEndLoc().getLocWithOffset(1), "/*_FORCE_COVER_END_*/", true, true);
   }
 
 private:
@@ -80,8 +80,8 @@ public:
       loc++;
     }
 
-    Rewrite.InsertText(FunctionNode->getLocStart().getLocWithOffset(loc), "/*_FORCE_COVER_START_*/", true, true);
-    Rewrite.InsertText(FunctionNode->getLocEnd().getLocWithOffset(1), "/*_FORCE_COVER_END_*/", true, true);
+    Rewrite.InsertText(FunctionNode->getBeginLoc().getLocWithOffset(loc), "/*_FORCE_COVER_START_*/", true, true);
+    Rewrite.InsertText(FunctionNode->getEndLoc().getLocWithOffset(1), "/*_FORCE_COVER_END_*/", true, true);
 
   }
 
@@ -128,7 +128,7 @@ public:
   std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                                  StringRef file) override {
     TheRewriter.setSourceMgr(CI.getSourceManager(), CI.getLangOpts());
-    return llvm::make_unique<MyASTConsumer>(TheRewriter);
+    return std::make_unique<MyASTConsumer>(TheRewriter);
   }
 
 private:
