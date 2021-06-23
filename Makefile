@@ -70,8 +70,8 @@ LLVM_LDFLAGS := `$(LLVM_CONFIG) --ldflags --libs --system-libs`
 # These are required when compiling vs. a source distribution of Clang. For
 # binary distributions llvm-config --cxxflags gives the right path.
 # CLANG_INCLUDES := \
-#	-I$(LLVM_SRC_PATH)/tools/clang/include \
-#	-I$(LLVM_BUILD_PATH)/tools/clang/include
+#	-I$(LLVM_SRC_PATH)/clang/include \
+#	-I$(LLVM_BUILD_PATH)/clang/include
 
 # List of Clang libraries to link. The proper -L will be provided by the
 # call to llvm-config
