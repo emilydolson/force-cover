@@ -34,3 +34,10 @@ example.cc~
 force_cover.cpp~
 Makefile~
 force_cover
+example
+
+# Output
+coverage*.txt
+*.profdata
+*.profraw
+examples/example_with_template_coverage_info.cc
