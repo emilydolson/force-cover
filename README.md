@@ -22,7 +22,7 @@ Theoretically force-cover should work on any operating system, but it's currentl
 You can install the requirements on Ubuntu-flavored Linux with:
 
 ```bash
-sudo apt install -y clang llvm-dev
+sudo apt install -y clang llvm-dev libclang-dev
 ```
 
 You can build force-cover by cloning this repo and running Make inside it:
