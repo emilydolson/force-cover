@@ -48,7 +48,7 @@
 # to the bin/ directory.
 
 CXX := clang++
-LVM_SRC_PATH := /usr/lib/llvm
+LLVM_SRC_PATH := /usr/lib/llvm
 LLVM_BUILD_PATH := $(LLVM_SRC_PATH)/build
 LLVM_BIN_PATH := $(LLVM_SRC_PATH)/bin
 
