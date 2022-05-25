@@ -136,7 +136,14 @@ private:
 };
 
 int main(int argc, const char **argv) {
-  CommonOptionsParser op(argc, argv, MatcherSampleCategory);
+  // From https://github.com/llvm/llvm-project/blob/e59f648d698efe58b96e9b6224449b2b8cfa872a/clang/docs/LibASTMatchersTutorial.rst
+  auto ExpectedParser = CommonOptionsParser::create(argc, argv, MatcherSampleCategory);
+  if (!ExpectedParser) {
+    // Fail gracefully for unsupported options.
+    llvm::errs() << ExpectedParser.takeError();
+    return 1;
+  }  
+  CommonOptionsParser& op = ExpectedParser.get();
   ClangTool Tool(op.getCompilations(), op.getSourcePathList());
 
   return Tool.run(newFrontendActionFactory<MyFrontendAction>().get());
