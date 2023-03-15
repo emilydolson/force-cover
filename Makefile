@@ -61,7 +61,7 @@ $(info Using LLVM_BUILD_PATH = $(LLVM_BUILD_PATH))
 $(info Using LLVM_BIN_PATH = $(LLVM_BIN_PATH))
 $(info -----------------------------------------------)
 
-CXXFLAGS :=  -O0 -g -std=c++14
+CXXFLAGS :=  -O0 -g -std=c++20
 PLUGIN_CXXFLAGS := -fpic
 
 LLVM_CXXFLAGS := `$(LLVM_CONFIG) --cxxflags`
