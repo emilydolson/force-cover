@@ -14,16 +14,12 @@ jobs:
 
     steps:
     - name: Install C++ Dependencies
-      run: sudo apt install -y clang-19 llvm-19-dev libclang-19-dev
+      run: sudo apt install -y clang llvm-dev libclang-dev
     - name: Install Python Dependencies
       run: pip install --user codecov
     - uses: actions/checkout@v4
-    - name: Check versions
-      run: |
-        clang++-19 --version
-        llvm-config-19 --cxxflags
     - name: make
-      run: make force_cover_coverage CXX=clang++-19 LLVM_CONFIG=llvm-config-19
+      run: make force_cover_coverage
     - name: Run tests
       run: ./testing/tests.sh
     - name: Generate coverage
