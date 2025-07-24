@@ -4,7 +4,7 @@
 
 ./force_cover examples/example.cc -- > testing/observed_example.cc
 diff testing/observed_example.cc testing/expected_outputs/example.cc
-./force_cover examples/header_file_with_templates.hpp -- -language c++ -std=c++14 > testing/header_file_with_templates.hpp || true
+./force_cover examples/header_file_with_templates.hpp -- -language c++ -std=c++20 > testing/header_file_with_templates.hpp || true
 diff testing/header_file_with_templates.hpp testing/expected_outputs/header_file_with_templates.hpp
 clang++ testing/observed_example.cc -fprofile-instr-generate -fcoverage-mapping -o testing/observed_example
 cd testing && ./observed_example
