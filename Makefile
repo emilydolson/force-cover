@@ -65,7 +65,7 @@ CXXFLAGS :=  -O0 -g -std=c++20
 PLUGIN_CXXFLAGS := -fpic
 
 LLVM_CXXFLAGS := `$(LLVM_CONFIG) --cxxflags`
-LLVM_LDFLAGS := `$(LLVM_CONFIG) --ldflags --libs --system-libs`
+LLVM_LDFLAGS := `$(LLVM_CONFIG) --ldflags --libs --system-libs `
 
 # These are required when compiling vs. a source distribution of Clang. For
 # binary distributions llvm-config --cxxflags gives the right path.
@@ -99,6 +99,7 @@ CLANG_LIBS := \
 	-lclangStaticAnalyzerCheckers \
 	-lclangStaticAnalyzerCore \
 	-lclangSerialization \
+	-lclangSupport \
 	-lclangToolingCore \
 	-lclangTooling \
 	-lclangFormat \
