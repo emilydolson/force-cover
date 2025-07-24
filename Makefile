@@ -103,6 +103,7 @@ CLANG_LIBS := \
 	-lclangToolingCore \
 	-lclangTooling \
 	-lclangFormat \
+	-lclangToolingSyntax \
 	-Wl,--end-group
 
 
