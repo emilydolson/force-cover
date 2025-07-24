@@ -17,11 +17,13 @@ jobs:
       run: sudo apt install -y clang llvm-dev libclang-dev
     - name: Install Python Dependencies
       run: pip install --user codecov
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: make
       run: make force_cover_coverage
     - name: Run tests
       run: ./testing/tests.sh
     - name: Generate coverage
       run: llvm-profdata merge default.profraw -o default.profdata && llvm-cov show ./force_cover -instr-profile=default.profdata > coverage.txt
-    - uses: codecov/codecov-action@v1
+    - uses: codecov/codecov-action@v5
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
