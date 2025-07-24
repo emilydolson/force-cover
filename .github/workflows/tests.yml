@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - name: Install C++ Dependencies
-      run: sudo apt install -y clang llvm-dev libclang-dev
+      run: sudo apt install -y clang-19 llvm-19-dev libclang-19-dev
     - name: Install Python Dependencies
       run: pip install --user codecov
     - uses: actions/checkout@v4
