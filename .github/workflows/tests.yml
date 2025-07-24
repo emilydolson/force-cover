@@ -19,7 +19,7 @@ jobs:
       run: pip install --user codecov
     - uses: actions/checkout@v4
     - name: make
-      run: make force_cover_coverage
+      run: make force_cover_coverage CXX=clang++-19 LLVM_CONFIG=llvm-config-19
     - name: Run tests
       run: ./testing/tests.sh
     - name: Generate coverage
