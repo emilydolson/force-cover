@@ -18,6 +18,10 @@ jobs:
     - name: Install Python Dependencies
       run: pip install --user codecov
     - uses: actions/checkout@v4
+    - name: Check versions
+      run: |
+        clang++-19 --version
+        llvm-config-19 --cxxflags
     - name: make
       run: make force_cover_coverage CXX=clang++-19 LLVM_CONFIG=llvm-config-19
     - name: Run tests
